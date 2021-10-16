@@ -1,7 +1,5 @@
-# 学习笔记
 
 # 目录
-
 ## js基础
 [变量提升](https://github.com/Betty985/note/issues/9)
 
