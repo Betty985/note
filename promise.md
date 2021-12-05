@@ -272,4 +272,112 @@ let p8=p1.then(()=>new Promise(()=>{}));
 let p9=p1.then(()=>Promise.reject());
 setTimeout(console.log,0,p8);
 setTimeout(console.log,0,p9)
+// 抛出异常会返回拒绝的期约
+let p10 =p1.then(()=>{throw 'baz'})
+setTimeout(console.log,0,p10);
+// 返回错误值不会触发，而会把错误对象包装在一个解决的期约中
+let p11 =p1.then(()=>Error('qux'));
+setTimeout(console.log,0,p11);
+
+```
+```js
+let p1 =Promise.reject('foo');
+// 若调用then（）时不传处理程序，则原样向后传
+let p2=p1.then();
+setTimeout(console.log,0,p2);
+
+// 为什么它们的状态是resolved
+let p3=p1.then(null,()=>undefined);
+let p4=p1.then(null,()=>{});
+let p5=p1.then(null,()=>Promise.resolve());
+setTimeout(console.log,0,p3);
+setTimeout(console.log,0,p4);
+setTimeout(console.log,0,p5);
+// 如果有显式的返回值，Promise.resolve()会包装这个值
+let p6 = p1.then(null,()=>'bar');
+let p7=p1.then(null,()=>Promise.resolve('bar'));
+setTimeout(console.log,0,p6);
+setTimeout(console.log,0,p7);
+let p8=p1.then(null,()=>new Promise(()=>{}));
+let p9=p1.then(null,()=>Promise.reject());
+setTimeout(console.log,0,p8);
+setTimeout(console.log,0,p9)
+// 抛出异常会返回拒绝的期约
+let p10 =p1.then(null,()=>{throw 'baz'})
+setTimeout(console.log,0,p10);
+// 返回错误值不会触发，而会把错误对象包装在一个解决的期约中
+let p11 =p1.then(null,()=>Error('qux'));
+setTimeout(console.log,0,p11);
+```
+### Promise.prototype.catch()
+Promise.prototype.catch()方法用于给期约添加拒绝处理程序。只接受一个参数onRejected处理程序。   
+相当于调用Promise.prototype.then(null,onRejected)，是一个语法糖
+```js
+let p=Promise.reject();
+let onRejected =function(e){
+    setTimeout(console.log,0,'rejected');
+}
+// 这两种添加拒绝处理程序的方式是一样的
+p.then(null,onRejected);
+p.catch(onRejected);
+// Promise.prototype.catch()返回一个新的期约实例
+let p1= new Promise(()=>{});
+let p2=p1.catch();
+setTimeout(console.log,0,p1);
+setTimeout(console.log,0,p2);
+setTimeout(console.log,0,p1===p2)
+```
+### Promise.prototype.finally()
+Promise.protype.finally()方法用于给期约添加onFinally处理程序，onFinally处理程序没有办法知道期约的状态是解决还是拒绝，所以主要用来添加清理代码。在非待定状态执行
+```js
+let p1 = Promise.resolve();
+let p2=Promise.reject();
+let onFinally =function(){
+    setTimeout(console.log,0,'Finally')
+}
+p1.finally(onFinally);
+p2.finally(onFinally);
+// Promise.prototype.finally()方法返回一个新的期约实例
+let p1= new Promise(()=>{});
+let p2 =p1.finally();
+setTimeout(console.log,0,p1);
+setTimeout(console.log,0,p2);
+setTimeout(console.log,0,p1===p2)
+```
+onFinally是一个状态无关的方法，大多数情况下它将表现为父期约的传递。
+```js
+let p1 = Promise.resolve('foo');
+// 往后传
+let p2 = p1.finally();
+let p3 = p1.finally(()=>undefined);
+let p4 = p1.finally(()=>{});
+let p5 = p1.finally(()=>Promise.resolve());
+let p6 = p1.finally(()=>'bar');
+let p7 = p1.finally(()=>Promise.resolve('bar'));
+let p8 = p1.finally(()=>Error('qux'));
+setTimeout(console.log,0,p2);
+setTimeout(console.log,0,p3);
+setTimeout(console.log,0,p3);
+setTimeout(console.log,0,p4);
+setTimeout(console.log,0,p5);
+setTimeout(console.log,0,p6);
+setTimeout(console.log,0,p7);
+setTimeout(console.log,0,p8);
+```
+如果返回的是一个待定的期约，或者onFinally处理程序抛出了错误（显式抛出或返回了一个拒绝期约），则会返回相应的期约
+```js
+// Promise.resolve()保留返回的期约
+let p9 = p1.finally(()=>new Promise(()=>{}));
+let p10 = p1.finally(()=>Promise.reject());
+setTimeout(console.log,0,p9);
+setTimeout(console.log,0,p10);
+let p11 =p1.finally(()=>{throw 'baz'});
+setTimeout(console.log,0,p11)
+```
+返回特定期约的情形并不常见，这是因为期约一解决，新期约仍然会原样后传初始的期约
+```js
+let p1 =Promise.resolve('foo');
+let p2 = p1.finally(()=>new Promise((resolve,reject)=>setTimeout(()=>resolve('bar'),100)));
+    setTimeout(console.log,0,p2);
+    setTimeout(()=>setTimeout(console.log,0,p2),200)
 ```
