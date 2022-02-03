@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vue学习</title>
+    <style>
+      #app {
+        display: flex;
+        width: 100%;
+      }
+      .catalogue {
+        width: 200px;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        left: 20px;
+        top: 18px;
+      }
+      .catalogue a {
+        display: block;
+        list-style: none;
+        margin-top: 10px;
+      }
+      .content {
+        flex: 1;
+        overflow: hidden;
+        border-left: 1px solid blueviolet;
+        padding: 0 2rem;
+        margin-left: 200px;
+      }
+      button {
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="catalogue">
+        <a v-for="(item,index ) in test" :key="index" :href="'#jump'+index">
+          {{index+1 +"."}} {{item.title}}
+        </a>
+      </div>
+      <div class="content">
+        <div id="jump0">
+          <h1>{{test[0].title}}</h1>
+          <p>时间为：{{test[0].date}}</p>
+        </div>
+        <div id="jump1">
+          <h1>{{test[1].title}}</h1>
+          <h4>插值语法——解析标签体内容</h4>
+          <p>hello,{{test[1].msg}}</p>
+          <h4>指令语法——解析标签</h4>
+          <a :href="test[1].url">vnshop </a>
+        </div>
+        <div id="jump2">
+          <h1>{{test[2].title}}</h1>
+          单向数据绑定：<input type="text" :value="test[2].value" />
+          双向数据绑定：<input type="text" v-model="test[2].value" />
+        </div>
+        <div id="jump3">
+          <h1>{{test[3].title}}</h1>
+          el
+          <li>el:"#app"</li>
+          <li>vm.$mount("#app");</li>
+          data
+          <li>对象式</li>
+          <li>函数式</li>
+        </div>
+        <div id="jump4">
+          <h1>{{test[4].title}}</h1>
+          <ol>
+            <li v-for="(item,index) in test[4].msg" :key="index">{{item}}</li>
+          </ol>
+        </div>
+        <div id="jump5">
+          <h1>{{test[5].title}}</h1>
+          <p>
+            <a
+              href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"
+              >Object.defineProperty(obj, prop, descriptor)</a
+            >
+          </p>
+          <p>{{Object.keys(test)}}</p>
+          <p v-for="item in test[5].msg">{{item}}</p>
+        </div>
+        <div id="jump6">
+          <h1>{{test[6].title}}</h1>
+          <button @click="sayHi">sayHi</button>
+          <button @click="eventTest(1,$event)">eventTest</button>
+        </div>
+        <div id="jump7">
+          <h1>{{test[7].title}}</h1>
+          <a
+            href="https://www.bilibili.com/video/BV1Zy4y1K7SH?p=15&spm_id_from=pageDriver"
+            @click="sayHi"
+            >sayHi</a
+          >
+          <button @click="eventTest(1,$event)">eventTest</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+      Vue.config.productionTip = false; //关闭提示
+      let date = new Date();
+      const vm = new Vue({
+        // el: "#app",
+        data: {
+          test: [
+            {
+              title: "初识vue",
+              date: date.toLocaleString(),
+            },
+            {
+              title: "vue模板语法",
+              msg: " world",
+              url: "https://github.com/wsdo/vnshop",
+            },
+            {
+              title: "数据绑定",
+              value: "test",
+            },
+            {
+              title: "el和data的两种写法",
+            },
+            {
+              title: "MVVM模型",
+              msg: [
+                "M:模型，对应data中的数据",
+                "V：视图：模板",
+                "VM:视图模型：vue实例对象",
+              ],
+            },
+            {
+              title: "数据代理",
+              msg: {
+                question: "什么是数据代理?",
+                answer: "通过一个对象代理对另一个对象中属性的操作(读/写)",
+              },
+            },
+            {
+              title: "事件处理",
+            },
+            {
+              title: "事件修饰符",
+              msg: {
+                prevent: "阻止默认事件",
+                stop: "阻止事件冒泡",
+                once: "事件只触发一次",
+                capture: "使用事件的捕获模式",
+                self: "只有event.target是当前操作的元素时才触发事件",
+                passive: "事件的默认事件立即执行，无需等待回调函数执行完毕",
+              },
+            },
+          ],
+        },
+        methods: {
+          jump(i) {
+            $("#jump");
+          },
+          eventTest(a, e) {
+            console.log("第一个参数传值会覆盖event，可以用$event占位");
+            console.log(a, e);
+          },
+          // throttle
+          sayHi() {
+            let delay = 1000;
+            let func = function () {
+              console.log("hi,我是时间戳实现的节流函数");
+            };
+            var pre = Date.now();
+            return (function () {
+              var that = this;
+              var args = arguments;
+              var now = Date.now();
+              console.log(now - pre >= delay);
+              if (now - pre >= delay) {
+                func.apply(that, args);
+                pre = Date.now();
+              }
+            })();
+          },
+          jump(i) {
+            console.log(`#jump${i}`);
+          },
+        },
+      });
+      let p = new Promise(() => {
+        console.log("开始模板解析");
+      }).then(
+        setTimeout(() => {
+          vm.$mount("#app");
+        }, 1000)
+      );
+    </script>
+    <script>
+      function $(el) {
+        return document.querySelector(el);
+      }
+      // 数据代理
+      let person = {
+        name: "hi",
+        sex: 1,
+      };
+      let number = 12;
+      Object.defineProperty(person, "age", {
+        // // 默认为undefined
+        // value: 13,
+        // 默认为false
+        enumerable: true,
+        // // 默认为false
+        // writable: false,
+        // // 是否可删，默认为false
+        // configurable: false,
+        // 读取该属性值时调用函数,返回属性值
+        get: function () {
+          console.log(`正在读取`);
+          return number;
+        },
+        // 修改该属性值时调用函数,且收到修改后的值
+        set(value) {
+          let r = Math.random() * 255;
+          let g = Math.random() * 255;
+          let b = Math.random() * 255;
+          $("#app").style.background = `rgb(${r},${g},${b})`;
+          console.log(`值被修改为${value}`);
+          number = value;
+        },
+      });
+      delete person.age;
+      //   for (key in person) {
+      //     console.log(`@ ${key}`);
+      //   }
+      console.log(Object.values(person));
+    </script>
+  </body>
+</html>
