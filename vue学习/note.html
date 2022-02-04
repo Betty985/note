@@ -1,0 +1,199 @@
+<!-- 
+  调试：
+  1.确定行数【开控制台】
+  2.debugger、console
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vue学习</title>
+    <script src="./../node_modules/vue/dist/vue.min.js"></script>
+    <link rel="stylesheet" href="note.css" />
+  </head>
+  <body>
+    <div id="loading">
+      <svg width="50px" height="50px">
+        <circle
+          cx="25"
+          cy="25"
+          r="20"
+          fill="transparent"
+          stroke-width="3"
+          stroke-dasharray="31.415, 31.415"
+          stroke="#02bcfe"
+          stroke-linecap="round"
+        >
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0, 25 25;360, 25 25"
+            dur="0.5s"
+            repeatCount="indefinite"
+          ></animateTransform>
+          <animate
+            attributeName="stroke"
+            values="#02bcfe;#3be6cb;#02bcfe"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+        </circle>
+        <circle
+          cx="25"
+          cy="25"
+          r="10"
+          fill="transparent"
+          stroke-width="3"
+          stroke-dasharray="15.7, 15.7"
+          stroke="#3be6cb"
+          stroke-linecap="round"
+        >
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="360, 25 25;0, 25 25"
+            dur="1.5s"
+            repeatCount="indefinite"
+          ></animateTransform>
+          <animate
+            attributeName="stroke"
+            values="#3be6cb;#02bcfe;#3be6cb"
+            dur="3s"
+            repeatCount="indefinite"
+          ></animate>
+        </circle>
+      </svg>
+      <div>loading...</div>
+    </div>
+    <div id="app" style="display: none" @mouseover="hasScrollbar">
+      <div class="top" @click="top" v-show="show">
+        <div class="top-in"></div>
+      </div>
+      <div class="catalogue">
+        <a v-for="(item,index ) in test" :key="index" :href="'#jump'+index">
+          {{index+1 +"."}} {{item.title}}
+        </a>
+      </div>
+      <div class="content">
+        <div id="jump0">
+          <h1>{{test[0].title}}</h1>
+          <p>当前时间为：{{test[0].date}}</p>
+        </div>
+        <div id="jump1">
+          <h1>{{test[1].title}}</h1>
+          <h4>插值语法——解析标签体内容</h4>
+          <p>hello,{{test[1].msg}}</p>
+          <h4>指令语法——解析标签</h4>
+          <a :href="test[1].url">vnshop </a>
+        </div>
+        <div id="jump2">
+          <h1>{{test[2].title}}</h1>
+          单向数据绑定：<input type="text" :value="test[2].value" />
+          双向数据绑定：<input type="text" v-model="test[2].value" />
+        </div>
+        <div id="jump3">
+          <h1>{{test[3].title}}</h1>
+          el
+          <li>el:"#app"</li>
+          <li>vm.$mount("#app");</li>
+          data
+          <li>对象式</li>
+          <li>函数式</li>
+        </div>
+        <div id="jump4">
+          <h1>{{test[4].title}}</h1>
+          <ol>
+            <li v-for="(item,index) in test[4].msg" :key="index">{{item}}</li>
+          </ol>
+        </div>
+        <div id="jump5">
+          <h1>{{test[5].title}}</h1>
+          <p>
+            <a
+              href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"
+              >Object.defineProperty(obj, prop, descriptor)</a
+            >
+          </p>
+          <p>{{Object.keys(test)}}</p>
+          <p v-for="item in test[5].msg">{{item}}</p>
+        </div>
+        <div id="jump6">
+          <h1>{{test[6].title}}</h1>
+          <button @click="sayHi">sayHi</button>
+          <button @click="eventTest(1,$event)">eventTest</button>
+        </div>
+        <div id="jump7">
+          <h1>{{test[7].title}}</h1>
+          <p v-for="(value,key) in test[7].msg ">. {{key}}: {{value}}</p>
+          <a
+            href="https://www.bilibili.com/video/BV1Zy4y1K7SH?p=15&spm_id_from=pageDriver"
+            @click.prevent="myalert('a标签',$event)"
+            >{{test[7].msg.prevent}}</a
+          >
+          <div @click.capture.self="myalert(1,$event)">
+            <button @click.stop="myalert(2,$event)">
+              {{test[7].msg.stop}}
+            </button>
+            <button @click.stop.once="myalert(3,$event)">
+              {{test[7].msg.once}}
+            </button>
+            <button @click="myalert(4,$event)">{{test[7].msg.capture}}</button>
+          </div>
+        </div>
+        <div id="jump8">
+          <h1>{{test[8].title}}</h1>
+          <input
+            type="text"
+            placeholder="按下回车弹窗"
+            @keyup.enter="myalert(5,$event)"
+          />
+          <p v-for="item in test[8].msg">{{item}}</p>
+          <input
+            type="text"
+            placeholder="按下tab弹窗"
+            @keydown.tab="myalert(5,$event)"
+          />
+          <input
+            type="text"
+            placeholder="按下ctrl弹窗"
+            @keydown.ctrl="myalert(6,$event)"
+          />
+          <input
+            type="text"
+            placeholder="按下ctrl+alt弹窗"
+            @keydown.ctrl.alt="myalert(7,$event)"
+          />
+        </div>
+        <div id="jump9">
+          <h1>{{test[9].title}}</h1>
+          姓名案例 (电话保留后四位）
+          <li v-for="item in test[9].msg">{{item}}</li>
+          姓名： <input type="text" v-model="com.name" /> 电话：<input
+            type="tel"
+            v-model="com.tel"
+          />
+          信息：{{com.name}}——{{com.tel.substring(com.tel.length-4,com.tel.length)}}
+          <br />
+          姓名： <input type="text" v-model="com.name" /> 电话：<input
+            type="tel"
+            v-model="com.tel"
+          />
+          信息：{{message()}}<br />
+          姓名： <input type="text" v-model="com.name" /> 电话：<input
+            type="tel"
+            v-model.number="com.tel"
+          />
+          信息：{{compute}} <br />输入'信息'的新值
+          <input type="text" v-model.lazy="compute" />
+        </div>
+        <div id="jump10">
+          <h1>{{test[10].title}}</h1>
+          <li v-for="i in test[10].msg">{{i}}</li>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="vm.js"></script>
+  </body>
+</html>
