@@ -1,0 +1,70 @@
+#app {
+  display: flex;
+  width: 100%;
+}
+/* 回到首页 */
+.top {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  height: 30px;
+  width: 50px;
+  text-align: center;
+  padding-top: 20px;
+  background-color: rgba(7, 0, 10, 0.8);
+  border-radius: 20%;
+  overflow: hidden;
+  transition: all 2s ease-in-out;
+}
+.top:hover:before {
+  top: 50%;
+}
+.top-in {
+  visibility: visible;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  border: 3px solid black;
+  border-color: white transparent transparent white;
+  transform: rotate(45deg);
+}
+/* 目录 */
+.catalogue {
+  width: 200px;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  left: 20px;
+  top: 18px;
+}
+.catalogue a {
+  display: block;
+  text-decoration: none;
+  margin-top: 10px;
+}
+/* 内容 */
+.content {
+  flex: 1;
+  overflow: hidden;
+  border-left: 1px solid blueviolet;
+  padding: 0 2rem;
+  margin-left: 200px;
+}
+button {
+  background: transparent;
+}
+#jump7 button {
+  margin: 1rem 0;
+}
+
+#loading {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#jump7 div {
+  background-color: rgba(203, 136, 230, 0.137);
+  border-radius: 0.5rem;
+  text-align: center;
+}
