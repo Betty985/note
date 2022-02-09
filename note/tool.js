@@ -2,7 +2,7 @@ function $(el) {
   return document.querySelector(el);
 }
 function eventTest(a, e) {
-  console.log("第一个参数传值会覆盖event，可以用$event占位");
+  console.log("第一个参数传值会覆盖event,可以用$event占位");
   console.log(a, e);
 }
 // throttle
@@ -48,10 +48,33 @@ function top() {
   });
   //   scrollTo(0, 0);
 }
-function hasScrollbar() {
-  let show =
-    document.body.scrollHeight >
-    (window.innerHeight || document.documentElement.clientHeight);
-  this.show = show;
+// let a = false;
+function show() {
+  window.addEventListener("scroll", show);
+
+  let oTop = document.body.scrollTop || document.documentElement.scrollTop;
+  if (oTop > 400) {
+    if ($(".top")) {
+      let t = $(".top").style.cssText;
+      //   $(".top").style.display = "block";
+      //   t+="@keyframes out{
+      //     from{
+      // transform:  scale(0.2,0.2) rotate(30deg);
+      //   background: red;
+      //     }
+      //     to{
+      // transform: none;
+      //   background: green
+      //     }
+      // }"
+    }
+    // a = true;
+  } else {
+    if ($(".top")) {
+      $(".top").style.display = "none";
+    }
+    // a = false;
+    // console.log("bye", a);
+  }
 }
-export { $, eventTest, sayHi, myalert, message, top, hasScrollbar };
+export { $, eventTest, sayHi, myalert, message, top, show };

@@ -1,30 +1,29 @@
-import {
-  $,
-  eventTest,
-  sayHi,
-  myalert,
-  message,
-  top,
-  hasScrollbar,
-} from "./tool.js";
-import { test, com } from "./data.js";
-Vue.config.productionTip = false; //关闭提示
-Vue.config.devtools = true; //配置是否允许 vue-devtools 检查代码。
-
-var vm = new Vue({
-  // el: "#app",
-  data: {
-    test,
-    com,
-    show: false,
+<template>
+  <div :id="'jump' + count">
+    <h1 v-if="test[count] && test[count].title">
+      {{ test[count].title }}
+    </h1>
+    <slot></slot>
+  </div>
+</template>
+<script>
+import { $, eventTest, sayHi, myalert, message } from "@n/tool.js";
+import { test, com } from "@n/data.js";
+export default {
+  data() {
+    return {
+      test,
+      com,
+      show: false,
+      count: this.iid,
+    };
   },
+  props: ["iid"],
   methods: {
     eventTest,
     sayHi,
     myalert,
     message,
-    top,
-    hasScrollbar,
   },
   computed: {
     compute: {
@@ -42,14 +41,14 @@ var vm = new Vue({
       },
     },
     /*计算属性只读可以简写为
-    compute：function(){
-        get函数里的代码
-    }
-    或
-    compute(){
-       get函数里的代码 
-    }
-    */
+      compute：function(){
+          get函数里的代码
+      }
+      或
+      compute(){
+         get函数里的代码
+      }
+      */
   },
   watch: {
     com: {
@@ -66,16 +65,6 @@ var vm = new Vue({
       //   },
     },
   },
-  mounted() {
-    $("#loading").style.display = "none";
-    $("#app").style.display = "block";
-  },
-});
-let p = new Promise(() => {
-  console.log("开始模板解析");
-});
-p.then(
-  setTimeout(() => {
-    vm.$mount("#app");
-  }, 500)
-);
+};
+</script>
+<style scoped></style>

@@ -1,0 +1,17 @@
+{
+  "描述1": {
+    "prefix": "vue",
+    "body": [
+      "<script >",
+      "</script>\n",
+      "<template>",
+      "\t<div>\n",
+      "\t</div>",
+      "</template>\n",
+      "<style scoped>\n",
+      "</style>",
+      "$2"
+    ],
+    "description": "描述2"
+  }
+}
