@@ -51,26 +51,17 @@ function top() {
 // let a = false;
 function show() {
   window.addEventListener("scroll", show);
-
   let oTop = document.body.scrollTop || document.documentElement.scrollTop;
   if (oTop > 400) {
     if ($(".top")) {
-      let t = $(".top").style.cssText;
-      //   $(".top").style.display = "block";
-      //   t+="@keyframes out{
-      //     from{
-      // transform:  scale(0.2,0.2) rotate(30deg);
-      //   background: red;
-      //     }
-      //     to{
-      // transform: none;
-      //   background: green
-      //     }
-      // }"
+      // let t = $(".top").style.cssText;
+      $(".top").style.display = "block";
+      $(".top").className = "top come";
     }
     // a = true;
   } else {
     if ($(".top")) {
+      $(".top").className = "top go";
       $(".top").style.display = "none";
     }
     // a = false;

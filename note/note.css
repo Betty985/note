@@ -68,3 +68,40 @@ button {
   border-radius: 0.5rem;
   text-align: center;
 }
+/* top动画 */
+@keyframes go {
+  from {
+    transform: none;
+    background-color: purple;
+  }
+  to {
+    transform: scale(0.2, 0.2) rotate(30deg);
+    background-color: snow;
+  }
+}
+@-webkit-keyframes go {
+  from {
+    transform: none;
+    background-color: purple;
+  }
+  to {
+    transform: scale(0.2, 0.2) rotate(310deg);
+    background-color: snow;
+  }
+}
+@keyframes come {
+  from {
+    transform: scale(0.2, 0.2) rotate(310deg);
+    background-color: white;
+  }
+  to {
+    transform: none;
+    background-color: purple;
+  }
+}
+.top.come {
+  animation: come 0.2s linear;
+}
+.top.go {
+  animation: go 0.2s linear;
+}
