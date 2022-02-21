@@ -12,6 +12,22 @@ xhr 的属性和方法：
 
 readyState 属性的数字是从头到尾在变化的，响应状态码是当次请求而响应的数字。
 readyState 属性值的变化会触发 readyStatechange 事件，可以用 onreadychange 来监视 readyState 属性值的变化，获取返回的数据，再利用 js 对 dom 的操作实现局部页面刷新。
+# 手写Ajax
+```js
+function myajax(obj){
+    let {url,method,success,error}=obj;
+let xhr =new XMLHttpRequest();
+    xhr.open(method,url,true);
+    xhr.send()
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState===4&&(xhr.status===200||xhr.status===304))
+        {
+            success(xhr.responseText)
+        }
+        else error(xhr.responseText)
+            }
+}
+```
 
 # promise 封装 Ajax
 
