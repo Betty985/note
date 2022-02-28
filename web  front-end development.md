@@ -157,6 +157,11 @@ readonly 和disabled<br />![image.png](https://cdn.nlark.com/yuque/0/2021/png/12
 - firefox gecko
 - IE trident
 - Opera presto 目前属于360和昆仑万维
+#### 浏览器内核和控制台
+● webkit内核（V8引擎）：谷歌Chrome、Safari、Opere 、手机浏览器
+● Gecko ：火狐
+● Presto：Opera<14版本的
+● Trident：IE 、IE Edhde(开始采用双内核（其中包含Chrome迷你）
 <a name="yrf6p"></a>
 ### **1.3.内核**
 
