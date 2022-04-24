@@ -412,4 +412,51 @@ function flatten(arr){
 ```
 
 # 深浅拷贝
-
+对于原始类型没有深拷贝和浅拷贝的区别
+浅拷贝只进行一层复制，深层次的引用类型是共享内存地址。
+深拷贝是无限层级拷贝，不会互相影响。
+## 浅拷贝
+### Object.assign()
+对一层的引用类型来说是深拷贝。对多层的引用类型来说是浅拷贝。
+### 数组的slice和concat  
+### 数组静态方法Array.form()
+### 展开运算符
+### 遍历实现浅拷贝
+```js
+function shallowCopy(obj){
+    if(typeof obj!=='object') return obj
+    let newObj=obj instanceof Array ? []:{}
+    //遍历symbol
+     let keys=Reflect.ownKeys(obj)
+     for(let key of keys){
+         if(obj.hasownProperty(key)){
+             newObj[key]=obj[key]
+         }
+     }
+     return newObj
+}
+```
+## 深拷贝
+### JSON的方法
+`JSON.parse(JSON.stringify(obj))`
+- 会忽略undefined、symbol和函数
+- NaN Infinity -Infinity会被序列化为null
+- 不能解决循环引用
+### 递归实现深拷贝
+```js
+function deepClone(target,hash=new WeakMap()){
+    if(typeof target !=='object'||target===null){
+        return target
+    }
+    if (target instanceof Date) return new Date(target)
+    if (target instanceof RegExp) return new RegExp(target)
+    if(hash.get(target)) return hash.get(target)
+    let cloneTarget=new target.constructor()
+    hash.set(target,cloneTarget)
+    Reflect.ownKeys(target).forEach(key=>{
+        cloneTarget[key]=deepClone(target[key],hash)
+    })
+    return cloneTarget
+}
+```
+### [window.structuredClone()](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone)
