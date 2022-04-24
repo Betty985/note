@@ -2,3 +2,414 @@
 ## 网站
 - [ECMA](https://www.ecma-international.org/)
 - [tc39.es](https://tc39.es/)
+
+
+# Function
+
+## call
+```js
+Function.prototype.mycall=function(context=window){
+    if(typeof this !=='function'){
+        throw new TypeError('error')
+    }
+    context.fn=this
+    let args=[...arguments].slice(1)
+    let result=context.fn(args)
+    delete context.fn
+    return result
+}
+
+
+```
+
+## apply
+```js
+Function.prototype.myapply=function(context=window){
+      if(typeof this !=='function'){
+        throw new TypeError('error')
+    }
+    context.fn=this
+    let result
+    if(arguments[1]){
+        result=context.fn(...arguments[1])
+    }else{
+        result=context.fn()
+    }
+    delete context.fn
+    return result
+}
+```
+## bind
+```js
+Function.prototype.mybind=function(context){
+     if(typeof this !=='function'){
+        throw new TypeError('error')
+    }
+    let that=this
+    let args=[...arguments].slice(1)
+    return function f(){
+        if(this instanceof f){
+            return new that(...args,...arguments)
+        }
+        return that.apply(context,args.concat(...arguments))
+    }
+}
+```
+# Object
+
+## new
+```js
+function mynew(){
+    let obj={}
+    let fn=[].shift.call(arguments)
+    obj.__proto__=fn.prototype
+    let result=fn.apply(obj,arguments)
+    return result instanceof Object ?result:obj
+}
+```
+
+# 数据类型判断
+
+## instanceof
+```js
+function myinstanceof(left,right){
+    let prototype=right.prototype
+    left=left.__proto__
+    while(1){
+        if(left===null||left===undefined){
+            return false
+        }
+        if(left===prototype) return true
+        left=left.__proto__
+    }
+}
+```
+## typeof
+```js
+function type(obj){
+    return Object.prototype.toString.call(obj).slice(8,-1).toLowerCase()
+}
+```
+# ajax
+```js
+function myajax(obj){
+    let {url,method,data,success,error}=obj
+    method=method.toUpperCase()
+    let xhr=new XMLHttpRequest()
+    xhr.open(method,url,true)
+    if(method=='HEAD'||method=='GET'){
+        xhr.send(null)
+    }
+    else{
+        xhr.send(data)
+    }
+    xhr.onreadystatechange=()=>{
+        if(xhr.readyState==4){
+            if(xhr.status>=200&&xhr.status<300||xhr.status==304){
+                success(xhr.responseText)
+            }
+            else{
+                error(xhr.responseText)
+            }
+        }
+    }
+}
+```
+## promise ajax
+```js
+function promiseAjax(obj){
+    return new Promise((resolve,reject)=>{
+        let {url,method,data}=obj
+        method=method.toUpperCase()
+        let xhr=new XMLHttpRequest()
+        xhr.open(method,url,true)
+        if(method=='HEAD'||method=='GET'){
+        xhr.send(null)
+        }
+       else{
+          xhr.send(data)
+       }
+       xhr.onreadystatechange=function(){
+       if(xhr.readyState==4){
+            if(xhr.status>=200&&xhr.status<300||xhr.status==304){
+                resolve(xhr.responseText)
+            }
+            else{
+                reject(xhr.responseText)
+            }
+        }
+       }        
+    })
+}
+```
+# 节流
+## 定时器版本
+```js
+function throttle(fn,delay){
+    let timer
+    return function(){
+        let context=this
+        let arguments
+        if(timer) return
+        timer=setTimeout(function(){
+            fn.apply(context,args)
+            timer=null
+        },delay)
+    }
+} 
+```
+##  时间戳
+```js
+function throttle(fn,delay){
+    let pre=0
+    return function(){
+        let now=Date.now()
+        let context=this
+        let arg=arguments
+        if(now-pre>delay){
+            fn.apply(context,arg)
+            pre=now
+        }
+    }
+}
+```
+# 防抖
+```js
+function debounce(fn,delay){
+    let timer
+    return function(){
+        let context=this
+        let args=arguments
+        clearTimeout(timer)
+        timer=setTimeout(()=>{
+            fn.apply(context,args)
+        },delay)
+    }
+}
+```
+
+# 继承
+
+## 原型链继承
+
+- 原型中包含的引用类型属性将被所有实例共享；
+
+- 子类在实例化的时候不能给父类构造函数传参；
+
+  ```js
+  function Animal() {
+    this.colors = ['blue']
+  }
+  Animal.prototype.getColor = function () {
+    return this.colors
+  }
+  function Cat() {}
+  Cat.prototype = new Animal()
+  const cat = new Cat()
+  cat.colors.push('red')
+  const cat2 = new Cat()
+  ```
+
+  ## 借用构造函数继承
+
+  解决了原型链继承的引用类型共享问题和传参问题。
+
+  方法必须定义在构造函数中，每次创建子类实例都会创建一遍方法。
+
+  ```js
+  function Animal(name) {
+    this.name = name
+    this.getName = function () {
+      return this.name
+    }
+  }
+  function Cat(name) {
+    Animal.call(this, name)
+  }
+  Cat.prototype = new Animal()
+  const cat = new Cat('mow')
+  ```
+
+  ## 组合继承
+
+  使用原型链继承原型上的属性和方法，通过盗用构造函数继承实例属性。
+
+  可以把方法定义在原型上实现重用，又可以让每个实例都有自己的属性。
+
+  ```js
+  function Animal(name) {
+    this.name = name
+    this.color = ['blue']
+  }
+  Animal.prototype.getName = function () {
+    return this.name
+  }
+  function Cat(name, age) {
+    Animal.call(this, name)
+    this.age = age
+  }
+  Cat.prototype = new Animal()
+  Cat.prototype.constructor = Cat
+  ```
+
+  ## 寄生组合继承
+
+  组合继承调用了2次父类构造函数[new Animal(),Animal.call()]
+
+  不直接调用父类构造函数给子类原型赋值，而是创建空函数获取父类原型的副本。
+
+  ```js
+  function Animal(name) {
+    this.name = name
+    this.color = ['blue']
+  }
+  Animal.prototype.getName = function () {
+    return this.name
+  }
+  function Cat(name, age) {
+    Animal.call(this, name)
+    this.age = age
+  }
+  Cat.prototype = Object.create(Animal.prototype)
+  Cat.prototype.constructor = Cat
+  
+  ```
+
+  ## 类继承
+
+  ```js
+  class Animal {
+    constructor(name) {
+      this.name = name
+      this.color = ['blue']
+    }
+    getName() {
+      return this.name
+    }
+  }
+  class Cat extends Animal {
+    constructor(name, age) {
+      super(name)
+      this.age = age
+    }
+  }
+  ```
+
+  
+
+# Array
+
+## 去重
+
+### ES5：filter+indexOf
+
+```js
+function unique(arr){
+  var res=arr.filter(function(item,index,array){
+    return array.indexOf(item)===index;
+  });
+  return res; 
+}
+
+```
+
+### ES6：扩展运算符+Set (可以用箭头函数)   
+
+不会删除undefined。
+
+```js
+let unique = (arr) => [...new Set(arr)]
+```
+
+### includes
+
+```js
+functon unique(arr) {
+    let res = []
+    for (let i = 0; i < arr.length; i++) {
+        if (!res.includes(arr[i])) {
+      	    res.push(arr[i])
+        }
+    }
+    return res
+}
+
+```
+
+### 对象的键不能重复
+
+得到的都是字符串形式。
+
+```js
+function unique(arr) {
+  let obj = {}
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] in obj) {
+      obj[arr[i]] ++
+    } else {
+      obj[arr[i]] = 0
+    }
+  }
+  return Object.keys(obj) // 以数组的形式返回键
+}
+```
+
+### reduce
+
+```js
+function unique(arr){
+    return arr.reduce((cur,next)=>{
+        !cur.includes(next)&&cur.push(next)
+        return cur
+    },[])
+}
+```
+
+## 数组扁平化：Array.prototype.flat
+
+### 递归
+
+```js
+function flatten(arr){
+    var result =[]
+    for(var i=0;i<arr.length;i++){
+        if(Array.isArray(arr[i])){
+            result=result.concat(flatten(arr[i]))
+        }
+        else{result.push(arr[i])}
+    }
+    return result
+}
+```
+
+### 生成器函数
+
+```js
+function* flatten(arr){
+    for (let item of arr){
+        if(Array.isArray(item)){
+            yield* flatten(item)
+        }
+        else yield item
+    }
+}
+let res=[...flatten(arr)]
+```
+
+### some和展开运算符
+
+some() 方法测试数组中是不是至少有1个元素通过了被提供的函数测试。
+
+它返回的是一个Boolean类型的值
+
+```js
+function flatten(arr){
+    while(arr.some(item=>Array.isArray(item))){
+        arr=[].concat(...arr)
+    }
+    return arr
+}
+```
+
+# 深浅拷贝
+
