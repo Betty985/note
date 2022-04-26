@@ -460,3 +460,134 @@ function deepClone(target,hash=new WeakMap()){
 }
 ```
 ### [window.structuredClone()](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone)
+# promise
+```js
+class MyPromise{
+    static PEDNGING='pending'
+    static RESOLVED='resolved'
+    static REJECTED='rejected'
+    constructor(fn){
+        this.state=MyPromise.PENDING
+        this.result=null
+        this.resolvedHandlers=[]
+        this.rejectedHandlers=[]
+        //在执行函数里抛出错误会触发reject
+        try{
+            fn(this.resolve.bind(this),this.reject.bind(this))
+        }catch(error){
+            this.reject(error)
+        }      
+        return this
+    }
+    resolve(result){
+        //判断是否为promise类型
+        if(result&&result instanceof MyPromise){
+              return result.then(resolve,reject)
+        }
+        setTimeout(()=>{
+            if(this.state==MyPromise.PENDING){
+            this.state=MyPromise.RESOLVED;
+            this.result=result
+            this.resolvedHandlers.map(cb=>cb(this.result))
+        }
+        },0)
+        return new MyPromise(resolve=>resolve(value))
+    }
+    reject(error){
+        setTimeout(()=>{
+          if(this.state==MyPromise.PENDING){
+            this.state=MyPromise.REJECTED
+            this.result=error
+            this.rejectedHandlers.map(cb=>cb(this.result))
+            }
+        },0)
+        return new MyPromise((resolve,reject)=>reject(this.result))
+    }
+    then(onFulfilled,onRejected){
+        //链式调用
+        return new MyPromise((resolve, reject) => {
+          // 原生promise规定：then里面的两个参数如果不是函数的话就要被忽略
+        onFulfilled=typeof onFulfilled==='function'?onFulfilled:v=v
+        onRejected=typeof onRejected==='function'?onRejected:r=>{throw r}
+    if(this.state===MyPromise.PENDING){
+        this.resolvedHandlers.push(onFulfilled)
+        this.rejectedHandlers.push(onRejected)
+    }
+    if(this.state===MyPromise.RESOLVED){
+        setTimeout(()=>{
+            onFulfilled(this.result)
+        })
+    }
+    if(this.state===MyPromise.REJECTED){
+       setTimeout(()=>{
+            onRejected(this.result)
+       })
+    }
+        }
+    }
+    catch(...handlers){
+        this.rejectedHandlers=[...this.rejectedHandlers,..handlers]
+       return this
+    }
+    all(promises){
+        return new MyPromise((resolve,reject)=>{
+            const results=[]
+            for(let i=0;i<promises.length;i++){
+                const promise=promise(i)
+                promise.then(res=>{
+                    results.push(res)
+                    if(results.length===promises.lengh) resolve(results)
+                }).catch(reject)
+            }
+        })
+    }
+    race(promises){
+        return new MyPromise((resolve,reject)=>{
+            for(let i=0;i<promises.length;i++){
+                const promise=promises[i]
+                promise.then(resolve).catch(reject)
+            }
+        })
+    }
+    allSettled(promises){
+        let result=[]
+        return new MyPromise((resolve,reject)=>{
+            promises.forEach((p,i)=>{
+                MyPromise.resolve(p).then(val=>{
+                    result.push({
+                        status:'fulfilled',
+                        value:val
+                    })
+                    if(result.length===promises.length){
+                        resolve(result)
+                    }
+                },err=>{
+                    result.push({
+                        status:'rejected',
+                        reason:err
+                    })
+                    if(result.length===promises.length){
+                        resolve(result)
+                    }
+                })
+            })
+        })
+    }
+    any(promises){
+        let index=0
+        returnnew MyPromise((resolve,reject)=>{
+            if(promises.length==0) return
+            promises.forEach((p,i)=>{
+                MyPromise(p).then(val=>{
+                    resolve(val)
+                },err=>{
+                    index++
+                    if(index===promises.length){
+                        reject(new AggregateError('all promises were rejected'))
+                    }
+                })
+            })
+        })
+    }
+}
+```
