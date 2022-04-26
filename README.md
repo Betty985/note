@@ -523,10 +523,10 @@ class MyPromise{
             onRejected(this.result)
        })
     }
-        }
+        })
     }
     catch(...handlers){
-        this.rejectedHandlers=[...this.rejectedHandlers,..handlers]
+        this.rejectedHandlers=[...this.rejectedHandlers,...handlers]
        return this
     }
     all(promises){
@@ -575,7 +575,7 @@ class MyPromise{
     }
     any(promises){
         let index=0
-        returnnew MyPromise((resolve,reject)=>{
+        return new MyPromise((resolve,reject)=>{
             if(promises.length==0) return
             promises.forEach((p,i)=>{
                 MyPromise(p).then(val=>{
