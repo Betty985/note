@@ -591,3 +591,39 @@ class MyPromise{
     }
 }
 ```
+# 排序
+
+## 快速排序
+
+```js
+var quickSort=function(arr){
+    if(arr.length<1){
+        return arr
+    }
+    let pivotIndex=Math.floor(arr.length/2)
+    let pivot=arr.splice(pivotIndex,1)[0]
+    let left=[],right=[]
+    for(let i of arr){
+        if(i<pivot){
+            left.push(i)
+        }else{
+            right.push(i)
+        }
+    }
+    return quickSort(left).concat([pivot].quickSort(right))
+}
+```
+## 冒泡排序
+```js
+var bubbleSort=(arr)=>{
+    let n=arr.length
+    for(let i=0;i<n;i++){
+        for(let j=0;j<n-i-1;j++){
+            if(arr[j]>arr[j+1]){
+                [arr[j],arr[j+1]]=[arr[j+1],arr[j]]
+            }
+        }
+    }
+    return arr
+}
+```
