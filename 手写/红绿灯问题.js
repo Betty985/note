@@ -1,111 +1,71 @@
-```js
 // 红绿灯
 function changeColor(color) {
-
-console.log('traffic-light ', color);
-
+  console.log("traffic-light ", color);
 }
 
 function main() {
+  changeColor("red");
 
-changeColor('red');
+  setTimeout(() => {
+    changeColor("yellow");
 
-setTimeout(()=>{
+    setTimeout(() => {
+      changeColor("green");
 
-changeColor('yellow');
-
-setTimeout(() => {
-
-changeColor('green');
-
-setTimeout(main, 3000);
-
-}, 2000);
-
-}, 1000);
-
+      setTimeout(main, 3000);
+    }, 2000);
+  }, 1000);
 }
 
 main();
-```
-```js
-function sleep(duration){
 
-    return new Promise(resolve => {
-
-        setTimeout(resolve, duration);
-
-    })
-
+function sleep(duration) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
 }
 
-function changeColor(duration,color){
-
-    return new Promise(resolve => {
-
-console.log('traffic-light ', color);
+function changeColor(duration, color) {
+  return new Promise((resolve) => {
+    console.log("traffic-light ", color);
 
     sleep(duration).then(resolve);
-
-})
-
+  });
 }
 
 function main() {
-
-return new Promise(resolve => {
-
-changeColor(2000, 'red').then(() => {
-
-changeColor(1000, 'yellow').then(() => {
-
-changeColor(3000, 'green').then(() => {
-
-main();
-
-})
-
-})
-
-})
-
-})
-
+  return new Promise((resolve) => {
+    changeColor(2000, "red").then(() => {
+      changeColor(1000, "yellow").then(() => {
+        changeColor(3000, "green").then(() => {
+          main();
+        });
+      });
+    });
+  });
 }
 main();
-```
-```js
+
 function sleep(duration) {
-
-return new Promise(resolve => {
-
-setTimeout(resolve, duration);
-
-})
-
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
 }
 
 async function changeColor(color, duration) {
+  console.log("traffic-light ", color);
 
-console.log('traffic-light ', color);
-
-await sleep(duration);
-
+  await sleep(duration);
 }
 
 async function main() {
+  while (true) {
+    await changeColor("red", 2000);
 
-while (true) {
+    await changeColor("yellow", 1000);
 
-await changeColor('red', 2000);
-
-await changeColor('yellow', 1000);
-
-await changeColor('green', 3000);
-
-}
-
+    await changeColor("green", 3000);
+  }
 }
 
 main();
-```
