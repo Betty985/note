@@ -1,0 +1,3 @@
+{
+    "plugins": ["./jsx-parser","./custom-jsx-plugin"]
+}
