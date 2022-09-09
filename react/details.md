@@ -1,0 +1,1 @@
+类组件的原型上的isReactComponent属性是`{}`,而函数组件的是undefined
