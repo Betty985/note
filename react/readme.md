@@ -472,7 +472,20 @@ react16 起，引入了 fiber 架构，为了使整个更新过程可随时暂�
 vue2.0 因为使用了 snabbdom，所以整体思路与 react 相同。但在元素对比时，如果新旧两个元素是同一元素，且没有设置 key 时，snabbdom 在 diff 子元素中会一次性对比旧节点、新节点及它们的首尾元素四个节点，以及验证列表是否有变化。vue3 的 diff 整体变化不大。
 
 #### 实践
-- 根据diff算法的设计原则，应尽量避免跨层级节点移动。
-- 通过设置唯一key进行优化，尽量减少组件层级深度。因为过深的层级会加深遍历深度，带来性能问题。
-- 设置shouldComponentUpdate或者React.pureComponent减少diff次数。
-- 
+
+- 根据 diff 算法的设计原则，应尽量避免跨层级节点移动。
+- 通过设置唯一 key 进行优化，尽量减少组件层级深度。因为过深的层级会加深遍历深度，带来性能问题。
+- 设置 shouldComponentUpdate 或者 React.pureComponent 减少 diff 次数。
+
+### react 的渲染流程？
+
+react 的渲染过程大致一致，但协调并不相同，以 react 16 为分界线，分为 stack reconciler 和 fiber reconciler。协调从狭义上讲特指 react 的 diff 算法；广义上讲，也指 react 的 reconciler 模块，reconciler 模块包含了 diff 算法和一些公共逻辑。
+
+stack reconciler 中核心调度方式是递归。调度的基本处理单位时事务，它的事务基类的 transaction。挂载主要通过 ReactMount 模块完成，更新通过 ReactUpdate 模块完成，模块之间相互分离，落脚执行点也是事务。
+
+react 16 及以后，协调改成了 fiber reconciler。它的调度方式主要有两个主要特点：协作多任务模式，在这个模式下，线程会定时放弃自己的运行权利，交还给主线程，通过 requestIdleCallback；策略优先级，调度任务通过标记 tag 的方式分优先级执行。fiber reconciler 的基本单位是 fiber，fiber 基于过去的 react element 提供了二次封装，提供了指向父、子、兄弟节点的引用，为 diff 工作的双链表实现提供了基础。
+
+在新的架构下，整个声明周期被划分为 render 和 commit 两个阶段。render 阶段的执行特点是可中断、可停止、无副作用，主要通过 workInProgress 树计算出 diff。以 current 树为基础，将每个 Fiber 作为一个基本单位，自下而上逐个节点检查并构造 workInProgress 树。
+在 commit 阶段需要处理 effect 列表，这里的 effect 列表包含了根据 diff 更新 DOM 树，回调生命周期、响应 ref 等。commit 阶段是同步执行的，不可中断暂停，所以不要在 componentDidMount、componentDidUpdate、componentWiilUnmount 中去执行重度消耗算力的任务。
+
+在动画、画布及手势等场景下，stack reconciler 会占用主线程，造成卡顿，而 fiber reconciler 的设计则能带来高性能的表现。
