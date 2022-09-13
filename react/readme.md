@@ -481,7 +481,7 @@ vue2.0 因为使用了 snabbdom，所以整体思路与 react 相同。但在元
 
 react 的渲染过程大致一致，但协调并不相同，以 react 16 为分界线，分为 stack reconciler 和 fiber reconciler。协调从狭义上讲特指 react 的 diff 算法；广义上讲，也指 react 的 reconciler 模块，reconciler 模块包含了 diff 算法和一些公共逻辑。
 
-stack reconciler 中核心调度方式是递归。调度的基本处理单位时事务，它的事务基类的 transaction。挂载主要通过 ReactMount 模块完成，更新通过 ReactUpdate 模块完成，模块之间相互分离，落脚执行点也是事务。
+stack reconciler 中核心调度方式是递归。调度的基本处理单位时事务，它的事务基类是 transaction。挂载主要通过 ReactMount 模块完成，更新通过 ReactUpdate 模块完成，模块之间相互分离，落脚执行点也是事务。
 
 react 16 及以后，协调改成了 fiber reconciler。它的调度方式主要有两个主要特点：协作多任务模式，在这个模式下，线程会定时放弃自己的运行权利，交还给主线程，通过 requestIdleCallback；策略优先级，调度任务通过标记 tag 的方式分优先级执行。fiber reconciler 的基本单位是 fiber，fiber 基于过去的 react element 提供了二次封装，提供了指向父、子、兄弟节点的引用，为 diff 工作的双链表实现提供了基础。
 
