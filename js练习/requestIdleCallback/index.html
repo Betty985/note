@@ -1,0 +1,24 @@
+<p>
+    演示使用 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Background_Tasks_API">
+     协作调度幕后任务 </a> 使用 <code>requestIdleCallback()</code>
+    方法。
+  </p>
+  
+  <div class="container">
+    <div class="label">解码量子丝极谱发射中...</div>
+    <progress id="progress" value="0"></progress>
+    <div class="button" id="startButton">
+      开始
+    </div>
+    <div class="label counter">
+      任务 <span id="currentTaskNumber">0</span> / <span id="totalTaskCount">0</span>
+    </div>
+  </div>
+  
+  <div class="logBox">
+    <div class="logHeader">
+      记录
+    </div>
+    <div id="log">
+    </div>
+  </div>
