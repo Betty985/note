@@ -112,6 +112,8 @@ function Counter() {
 `<p>You clicked {count} times</p>`没有做任何特殊的数据绑定，它只是在渲染输出中插入了一个由react提供的数字。当setCount的时候，React会带着一个不同的count值再次调用组件。然后，React会更新DOM以保持和渲染输出一致。
 **任意一次渲染中的count常量都不会随着时间改变**。渲染输出会变是因为我们的组件在每一次调用引起的渲染中，包含的count状态独立于其他渲染，这个状态值是函数中的一个常量。
 # 每一次渲染都有它自己的事件处理函数
+在组件内定义的函数每一次渲染都在变。
+
 [示例](https://codesandbox.io/s/w2wxl3yo0l)
 步骤：
 - 点击增加counter到3
@@ -313,6 +315,298 @@ ReactDOM.render(<Counter />, rootElement);
 - 第一种策略是在依赖中包含所有effect中用到的组件内的值。但是我们的定时器会在每一次count改变后清除和重新设定。
 - 第二种策略是修改effect内部的代码以确保它包含的值只会在需要的时候发生变更。我们其实并不需要在effect中使用count,当我们想要根据前一个状态更新状态的时候，我们可以使用setState的函数形式。
 
+可以认为setState的函数形式是在给React“发送指令”告知如何更新状态。只在effects中传递最小的信息会很有帮助。
+
+#### 更强大的姐妹模式-useReducer
+可变步长
+```js
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(c => c + step);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [step]);
+
+  return (
+    <>
+      <h1>{count}</h1>
+      <input value={step} onChange={e => setStep(Number(e.target.value))} />
+    </>
+  );
+}
+```
+行为：修改step会重启定时器，因为它是依赖之一。
+
+假如我们不想在step改变后重启定时器，我们该如何从effect中移除对step的依赖呢？
+
+解耦来自Actions的更新：当你想更新一个状态，并且这个状态更新依赖于另一个状态的值时，你可能需要用useReducer去替换它们。
+> 在某些场景下，useReducer 会比 useState 更适用，例如 state 逻辑较复杂且包含多个子值，或者下一个 state 依赖于之前的 state 等。并且，使用 useReducer 还能给那些会触发深更新的组件做性能优化，因为你可以向子组件传递 dispatch 而不是回调函数 。
+
+```js
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { count, step } = state;
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      dispatch({ type: 'tick' });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [dispatch]);
+
+  return (
+    <>
+      <h1>{count}</h1>
+      <input value={step} onChange={e => {
+        dispatch({
+          type: 'step',
+          step: Number(e.target.value)
+        });
+      }} />
+    </>
+  );
+}
+
+const initialState = {
+  count: 0,
+  step: 1,
+};
+
+function reducer(state, action) {
+  const { count, step } = state;
+  if (action.type === 'tick') {
+    return { count: count + step, step };
+  } else if (action.type === 'step') {
+    return { count, step: action.step };
+  } else {
+    throw new Error();
+  }
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<Counter />, rootElement);
+
+```
+可以从依赖中去除dispatch, setState, 和useRef包裹的值,因为React会确保它们是静态的。
+
+### useReducer是hooks的作弊模式
+可以移除effect的依赖，不管状态更新是依赖上一个状态还是依赖另一个状态。依赖props？
+```js
+import React, { useState, useReducer, useEffect } from "react";
+import ReactDOM from "react-dom";
+
+function Counter({ step }) {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  function reducer(state, action) {
+    if (action.type === 'tick') {
+      return state + step;
+    } else {
+      throw new Error();
+    }
+  }
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      dispatch({ type: 'tick' });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [dispatch]);
+
+  return <h1>{count}</h1>;
+}
+
+function App() {
+  const [step, setStep] = useState(1);
+
+  return (
+    <>
+      <Counter step={step} />
+      <input value={step} onChange={e => setStep(Number(e.target.value))} />
+    </>
+  );
+}
+  
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+```
+如果你需要可以在reducer里访问props，这种模式会使一些优化失效。
+**即使是在这个例子中，React也保证dispatch在每次渲染中都是一样的。**
+
+为什么之前渲染里调用的reduce知道新props？
+当dispatch的时候，react只是记住了action，它会在下一次渲染中再次调用reducer。
+
+useReducer可以把更新逻辑和描述发生了什么分开，可以移除不必要的依赖，避免不必要的effect调用。
+### 不能把函数放到effect里
+```js
+function SearchResults() {
+  function getFetchUrl(query) {
+    return 'https://hn.algolia.com/api/v1/search?query=' + query;
+  }
+
+  useEffect(() => {
+    const url = getFetchUrl('react');
+    // ... Fetch data and do something ...
+  }, []); // 🔴 Missing dep: getFetchUrl
+
+  useEffect(() => {
+    const url = getFetchUrl('redux');
+    // ... Fetch data and do something ...
+  }, []); // 🔴 Missing dep: getFetchUrl
+
+  // ...
+}
+```
+getFetchUrl放到依赖数组里？
+- 不放。在组件内定义的函数每一次渲染都在变，所以它应该是依赖。
+- 放。函数变得太频繁了。。。
+
+解决方法：
+- 函数没有使用组件内的任何值，应该把它提到组件外面去定义。因为它不在渲染范围内，不会被数据流影响，所以不需要设为依赖。
+- 包装成useCallback Hook。useCallback本质上添加了一层依赖检查。我们使函数本身只在需要的时候才改变，而不是去掉去函数的依赖。这种方法也适用于通过属性从父组件传入的函数。
+
+```js
+function Parent() {
+  const [query, setQuery] = useState('react');
+
+  // ✅ Preserves identity until query changes
+  const fetchData = useCallback(() => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + query;
+    // ... Fetch data and return it ...
+  }, [query]);  // ✅ Callback deps are OK
+
+  return <Child fetchData={fetchData} />
+}
+
+function Child({ fetchData }) {
+  let [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetchData().then(setData);
+  }, [fetchData]); // ✅ Effect deps are OK
+
+  // ...
+}
+```
+### 函数是数据流的一部分吗？
+这种模式在class组件中行不通。
+```js
+class Parent extends Component {
+  state = {
+    query: 'react'
+  };
+  fetchData = () => {
+    const url = 'https://hn.algolia.com/api/v1/search?query=' + this.state.query;
+    // ... Fetch data and do something ...
+  };
+  render() {
+    return <Child fetchData={this.fetchData} />;
+  }
+}
+
+class Child extends Component {
+  state = {
+    data: null
+  };
+  componentDidMount() {
+    this.props.fetchData();
+  }
+  /**
+   * fetchData是一个class方法！（也可以说是class属性）它不会因为状态的改变而不同，
+  */
+  componentDidUpdate(prevProps) {
+    // 🔴 this.props.fetchData和 prevProps.fetchData始终相等，因此不会重新请求。
+    if (this.props.fetchData !== prevProps.fetchData) {
+      this.props.fetchData();
+    }
+  }
+  render() {
+    // ...
+  }
+}
+```
+绑定特定的query？
+
+```js
+  render() {
+    return <Child fetchData={this.fetchData.bind(this, this.state.query)} />;
+  }
+```
+this.props.fetchData !== prevProps.fetchData 表达式永远是true。这会导致我们总是去请求。
+
+想要解决这个class组件中的难题，唯一现实可行的办法是硬着头皮把query本身传入 Child 组件。 Child 虽然实际并没有直接使用这个query的值，但能在它改变的时候触发一次重新请求。
+
+在class组件中，函数属性本身并不是数据流的一部分。组件的方法中包含了可变的 this 变量导致我们不能无疑地认为它是不变的。即使我们只需要一个函数，我们也必须把一堆数据传递下去做“diff“。不知道父组件传过来的函数是否依赖状态，也不知道它依赖的状态是否改变了。
+
+在hook组件中，使用useCallback让函数完全参与到数据流中。类似的，useMemo可以让我们对复杂对象做类似的事情。
+到处使用useCallback是笨拙的，使用场景：
+- 需要将函数传递下去并且函数会在子组件的effect中被调用
+- 试图减少对子组件的记忆负担。[如何避免向下传递回调？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down)
+
+推荐：放在effect里或者从顶层引入
+
+**useEffect的设计意图就是要强迫你关注数据流的改变，然后决定我们的effects该如何和它同步。**
+# 竞态
+```js
+class Article extends Component {
+  state = {
+    article: null
+  };
+  componentDidMount() {
+    this.fetchData(this.props.id);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.fetchData(this.props.id);
+    }
+  }
+  async fetchData(id) {
+    const article = await API.fetchArticle(id);
+    this.setState({ article });
+  }
+  // ...
+}
+```
+请求结果返回的顺序不能保证一致。比如我先请求 {id: 10}，然后更新到{id: 20}，但{id: 20}的请求更先返回。请求更早但返回更晚的情况会错误地覆盖状态值。
+
+> 网络请求的过程是复杂的，且响应时间是不确定的，访问同一个目的地址，请求经过的网络链路不一定是一样的路径。所以先发出的请求不一定先响应，如果前端以先发请求先响应的规则来开发的话，那么就可能会导致错误的数据使用，这就是竞态条件问题。 ----[解决前端常见问题：竞态条件](https://juejin.cn/post/7098287689618685966)
+
+effect并没有神奇地解决这个问题。
+- 如果使用的异步方式支持取消，可以直接在清除函数中取消异步请求。
+- 使用一个布尔值来跟踪它。
+
+```js
+function Article({ id }) {
+  const [article, setArticle] = useState(null);
+
+  useEffect(() => {
+    let didCancel = false;
+
+    async function fetchData() {
+      const article = await API.fetchArticle(id);
+      if (!didCancel) {
+        setArticle(article);
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      didCancel = true;
+    };
+  }, [id]);
+
+  // ...
+}
+```
+
+class组件生命周期的思维模型中，副作用的行为和渲染输出是不同的。UI渲染由props和state驱动，并且能保持步调一致。但副作用不是。
+在useEffect的思维模型中，默认都是同步的。副作用变成了react数据流的一部分。
 # 参考资料
 - [a-complete-guide-to-useeffec](https://overreacted.io/zh-hans/a-complete-guide-to-useeffect/)
 
