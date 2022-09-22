@@ -636,3 +636,27 @@ react知道哪个state对应哪个use State靠的是hook调用的顺序。hooks�
   - Context 容器：Router和MemoryRouter
   - 消费者组件：用以匹配路由，主要有Route、Redirect、Switch
   - 与平台关联的功能组件：Link、NavLink、DeepLinking等
+
+### React中常用的工具库有哪些？
+破题：分类、列举
+分类法：二分法、矩阵法、公式法、过程法、要素法
+
+过程：初始化、开发、构建、检查、发布
+
+- 初始化：react官方推荐用create-react-app，生成项目时配置足够简单，但扩展及其麻烦。所以由第三方的react-app-rewired库对create-react-app提供扩展能力。国内还有umi和dva这样一站式解决方案。如果要初始化一个组件项目，create-react-library对组件的场景有优化，更适合发布组件。storybook支持大规模组件开发，交互式开发体验可以降低组件库的维护成本。
+- 开发：
+  - 路由：react-router
+  - 样式：基础做法是CSS模块化，emotion通过提供props接口消灭内联样式。styled-component通过模版字符串提供基础的样式组件。
+  - 基础组件：AntD
+  - 功能组件：
+    - react-dnd和react-draggable用于拖拽
+    - react-pdf-viewer用于预览PDF
+    - Video-react用于播放视频
+    - react-window和react-virtualized用于解决长列表。
+  - 状态管理：
+    - flux
+    - mobx
+    - redux
+- 构建：webpack用户多，实践验证完备，插件丰富。rollup专注于交付库，在交付场景下的打包更具备优势，支持多种模块类型输出。esbuild是打包及压缩工具，核心代码由Go编写，性能足够强。
+- 检查：主要是代码规范和代码测试。代码规范检查一般是eslint，代码测试一般是jest
+- 发布： s3-plugin-webpack主要是识别构建后的静态文件进行上传。
