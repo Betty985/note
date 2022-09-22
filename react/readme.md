@@ -274,7 +274,8 @@ react 社区通常将组件分为无状态组件或者有状态组件。
 无状态组件（受控组件）可复用性、通用性更强，有状态组件（非受控组件）更关注业务。
 
 > 在大多数情况下，你应该使用受控组件。
-> 无状态组件的应用场景：
+
+无状态组件的应用场景：
 
 - 样式组件：样式判断逻辑分离到自身上，容易维护；
 - 代理组件:封装属性，减少重复代码；切断外部组件库的强依赖性；可以批量修改基础组件的字段。
@@ -622,3 +623,16 @@ react知道哪个state对应哪个use State靠的是hook调用的顺序。hooks�
 采用外观模式，将业务逻辑封装到各自的自定义Hook中，组件内部只需调用单个自定义Hook暴露的接口。
 
 > 外观模式（Facade Pattern）隐藏系统的复杂性，并向客户端提供了一个客户端可以访问系统的接口。这种类型的设计模式属于结构型模式，它向现有的系统添加一个接口，来隐藏系统的复杂性。
+## React 生态
+### React-router的实现原理及工作方式分别是什么？
+#### 实现原理
+破题：基础原理和React Router内部的实践方案。
+- 基础原理：切换Hash的方式可以依靠浏览器变化，如果是切换网址中的path，要用到HTML5 History API中的pushState、replaceState等。使用这个方式时，还需要在服务端完成historyApiFallback 配置。
+- 实践方案：React Router内部主要依靠history库完成，这是由React Router 自己封装的库，为了实现跨平台的特性，内部提供了两套基础history，一套是直接使用浏览器的History API，用于支持react-router-dom;另一套是基于内存实现的版本，这是一个数组，用于支持react-router-native。
+#### 工作方式
+破题：整体设计模式与关键模块
+- 整体设计模式：在架构上通过Monorepo进行库的管理。Monorepo具有团队间透明、迭代便利的优点。在数据通信上使用了Context API完成上下文传递。
+- 局部关键模块：三类组件：
+  - Context 容器：Router和MemoryRouter
+  - 消费者组件：用以匹配路由，主要有Route、Redirect、Switch
+  - 与平台关联的功能组件：Link、NavLink、DeepLinking等
