@@ -601,3 +601,12 @@ React 的性能问题通常有两类：长列表和重复渲染。
 react知道哪个state对应哪个use State靠的是hook调用的顺序。hooks的设计基于数组，在调用时按顺序加入数组中，如果使用循环、条件或嵌套函数很有可能导致数组取值错位，执行错误的hook。当然在react源码里的是链表。
 #### 如何规避
 可以引入eslint的hooks检查插件进行预防。
+### useEffect与useLayoutEffect区别在哪里？
+破题：共同点：使用方式、运用效果；不同点：使用场景、独有能力、设计原理、未来趋势
+#### 共同点
+- 使用方式：useLayoutEffect和useEffect函数签名相同，源码中最终都调用了mountEffectImpl的函数。两者使用方式完全一致，甚至一定程度上可以相互替换；
+- 运用效果：两者都是处理副作用，React官方团队说不能掌握useLayoutEffect可以直接使用useEffect，遇到问题再尝试使用useLayoutEffect;
+#### 不同点
+- 使用场景：大多数场景下可以直接使用useEffect,但是如果代码引起了页面闪烁，可以使用useLayoutEffect。直接操作DOM样式或者引起DOM样式更新的场景更推荐使用useLayoutEffect。
+- 设计原理：LayoutEffect和普通Effect的标记不一样，标记为HookLayout的effect会在DOM变更之后同步调用，所以可以使用它来读取DOM布局并同步触发重渲染。但是计算量大的耗时任务必然会造成阻塞。
+- 未来趋势：会长期共存，暂时没有删减合并的计划。
