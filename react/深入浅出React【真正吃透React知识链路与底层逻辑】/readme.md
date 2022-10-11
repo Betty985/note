@@ -147,3 +147,11 @@ Fiber将一个大的更新任务拆解为许多个小任务。 Fiber架构的重
 - 即使没有开启异步，react15下ComponentWillUpdate和ComponentWillReceiveProps里滥用setState导致重复渲染死循环。
 
 react改造生命周期的动机是为了配合fiber架构的异步渲染机制。 确保了fiber机制下数据和视图的安全性，也确保了生命周期方法的行为更纯粹、可控、可预测。
+# 数据是如何在React组件之间流动的？
+基于Props的单向数据流。组件类似于JS函数,接受任意入参返回描述页面展示内容的react元素。
+- 父子：props
+- 子父：回调函数入参
+- 兄弟：通过共同父组件
+- 任意组件：发布订阅模式（socket.io，node的EventEmitter,vue的EventBus)、context API(官方提供的组件树全局通信方式。旧的context API代码不够优雅很难区分生产者和消费者，无法保证数据在生产者和消费者之间及时同步 ；新的context API在组件的shouldComponentUpdate返回false的情况下也能向后代组件传播，解决了生产者和消费者 数据一致性问题。)、redux
+
+在redux的工作过程中，数据流是严格单项的。store是一个只读的单一数据源，action是对变化的描述，reducer负责对变化进行分发和处理。redux通过提供一个统一的状态容器，使数据能够自由在组件之间传递。
