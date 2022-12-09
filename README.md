@@ -633,7 +633,35 @@ class MyPromise {
   }
 }
 ```
-
+## 并发限制的promise调度器
+```js
+class Scheduler{
+    constructor(){
+        this.queue=[];
+        this.limit=3;
+        this.run=0
+        
+    }
+    add(promise){
+        this.queue.push(promise)
+    }
+    taskStart(){
+        for(let i=0;i<this.maxCount;i++){
+            this.request()
+        }
+    }
+    request(){
+        if(!this.queue.length||this.run>=this.limit){
+            return
+        }
+        this.run++;
+        this.queue.shift().then(()=>{
+            this.run--;
+            this.request()
+        })
+    }
+}
+```
 # 排序
 
 ## 快速排序
