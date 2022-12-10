@@ -72,7 +72,14 @@ function mynew() {
   return result instanceof Object ? result : obj;
 }
 ```
-
+## Object.create
+```js
+function create(o){
+    function F(){}
+    F.prototype=o
+    return new F()
+}
+```
 # 数据类型判断
 
 ## instanceof
