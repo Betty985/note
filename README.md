@@ -130,7 +130,21 @@ function myajax(obj) {
   };
 }
 ```
-
+## promise实现图片的异步加载
+```js
+const imageAsync=(url)=>{
+    return new Promise((resolve,reject)=>{
+        let img=new Image()
+        img.src=url
+        img.onload=()=>{
+            resolve(image)
+        }
+        img.onerro=(err)=>{
+            reject(err)
+        }
+    })
+}
+```
 ## promise ajax
 
 ```js
