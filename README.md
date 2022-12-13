@@ -331,7 +331,16 @@ function debounce(fn, delay) {
   ```
 
 # Array
-
+## filter
+```js
+Array.prototype.myFilter=function(fn){
+    let res=[]
+    for(let i=0,len=this.length;i<len;i++){
+        fn(this[i])&&res.push(this[i])
+    }
+    return res
+}
+```
 ## 去重
 
 ### ES5：filter+indexOf
