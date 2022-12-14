@@ -807,3 +807,34 @@ class Route{
     }
 }
 ```
+# 发布订阅
+```js
+class EventEmit{
+    handlers={}
+    add(type,cb){
+        if(!this.handlers[type]){
+            this.handlers[type]=[]
+        }
+        this.handlers[type].push(cb)
+    }
+    emit(type,params){
+        if(!this.handlers[type]){
+            return new Error('该事件未注册')
+        }
+        this.handlers[type].forEach(cb=>{
+            cb(...params)
+        })
+    }
+    remove(type,cb){
+        if(!cb){
+            delete this.handlers[type]
+        }else{
+            const index=this.handlers[type].findIndex(el=>el===cb)
+            this.handlers[type].splice(index,1)
+            if(!this.handlers[type].length){
+                delete this.handlers[type]
+            }
+        }
+    }
+}
+```
