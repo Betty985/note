@@ -838,3 +838,11 @@ class EventEmit{
     }
 }
 ```
+# promisify
+```js
+const promisify=(fn)=>(...args)=>new Promise((resolve,reject)=>args.push(function (err,data){
+  err?reject(err):resolve(data)
+})
+  fn.apply(null,args)
+)
+```
