@@ -846,3 +846,15 @@ const promisify=(fn)=>(...args)=>new Promise((resolve,reject)=>args.push(functio
   fn.apply(null,args)
 )
 ```
+# 字符串模版
+```js
+const render=(template,data)=>{
+  const reg=/\{\{(\w+)\}\}/
+  if(template.test(reg)){
+    const name=template.exec(reg)[1]
+    template=template.replace(name,data[name])
+    return render(template,data)
+  }
+  return template
+}
+```
