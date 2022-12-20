@@ -223,7 +223,21 @@ function debounce(fn, delay) {
   };
 }
 ```
-
+## lastPromise
+```js
+function lastPromise(fn){
+  let timer;
+  return async(...args)=>{
+    const res=await fn(...args)
+    clearTimeout(timer)
+    return new Promise(resolve=>{
+      timer=setTimeout(()=>{
+        resolve(res)
+      })
+    })
+  }
+}
+```
 # 继承
 
 ## 原型链继承
