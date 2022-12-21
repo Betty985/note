@@ -872,3 +872,8 @@ const render=(template,data)=>{
   return template
 }
 ```
+# 下划线驼峰互转
+```js
+const underline2Camel=str=>str.replace(/_(\w)/g,(match,p1)=>p1.toUpperCase())
+const camel2Underline=str=>str.replace(/[A-Z]/g,p1=>`_${p1.toLowerCase()}`)
+```
