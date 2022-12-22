@@ -877,3 +877,21 @@ const render=(template,data)=>{
 const underline2Camel=str=>str.replace(/_(\w)/g,(match,p1)=>p1.toUpperCase())
 const camel2Underline=str=>str.replace(/[A-Z]/g,p1=>`_${p1.toLowerCase()}`)
 ```
+# 版本号排序
+```js
+// 比较版本号
+const sortVersion=arr=>arr.sort((a,b)=>{
+    const a1=a.split('.'),a2=b.split('.')
+    let i=0;
+    while(true){
+         i++
+        if(a1[i]===undefined||a2[i]===undefined){
+            return a2.length-a1.length
+        }else if(a1[i]===a2[i]){
+            continue
+        }else{
+            return a2[i]-a1[i]
+        }      
+    }
+})
+```
