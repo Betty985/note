@@ -895,3 +895,7 @@ const sortVersion=arr=>arr.sort((a,b)=>{
     }
 })
 ```
+# 洗牌
+```js
+const shuffle=arr=>arr.sort((a,b)=>Math.random()-0.5)
+```
