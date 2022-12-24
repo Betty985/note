@@ -899,3 +899,19 @@ const sortVersion=arr=>arr.sort((a,b)=>{
 ```js
 const shuffle=arr=>arr.sort((a,b)=>Math.random()-0.5)
 ```
+# 数组分割
+```js
+const chunk=(arr,size)=>{
+    let res=[]
+    if(size<1){
+        throw new Error('size < 1')
+    }
+    arr.forEach((item,index)=>{
+        if(index%size===0){
+            res.push([])
+        }
+        res[res.length-1].push(item)
+    })
+    return res
+}
+```
