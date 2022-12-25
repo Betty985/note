@@ -915,3 +915,11 @@ const chunk=(arr,size)=>{
     return res
 }
 ```
+# reduce实现map
+理论基础：reduce是遍历、变形、累积三种运算的合成。
+```js
+const transduce=(arr,fn)=>arr.reduce((pre,cur,index,arr)=>{
+    pre.push(fn(cur,index,arr))
+    return pre
+  },[])
+```
