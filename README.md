@@ -923,3 +923,17 @@ const transduce=(arr,fn)=>arr.reduce((pre,cur,index,arr)=>{
     return pre
   },[])
 ```
+# js重载
+```js
+function addMethod(obj,name,fn){
+  const old=obj[name]
+  obj[name]=function(){
+    if(arguments.length===fn.length){
+      return fn.apply(this,arguments)
+    }
+    if(typeof old==='function'){
+      return old.apply(this,arguments)
+    }
+  }
+}
+```
