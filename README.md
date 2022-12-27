@@ -937,3 +937,14 @@ function addMethod(obj,name,fn){
   }
 }
 ```
+# get
+```js
+const get=(obj,...selectors)=>[...selectors].map(
+  s=>
+  s.replace(/\[([^\[\]]*)\]/g,'.$1').
+  split('.')
+  .filter(i=>i!=='')
+  .reduce((pre,cur)=>pre&&pre[cur]
+  ,obj)
+)
+```
