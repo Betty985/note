@@ -941,10 +941,23 @@ function addMethod(obj,name,fn){
 ```js
 const get=(obj,...selectors)=>[...selectors].map(
   s=>
-  s.replace(/\[([^\[\]]*)\]/g,'.$1').
-  split('.')
+  s.replace(/\[([^\[\]]*)\]/g,'.$1')
+  .split('.')
   .filter(i=>i!=='')
   .reduce((pre,cur)=>pre&&pre[cur]
   ,obj)
 )
+```
+# isPrime
+```js
+const isPrime=(n)=>{
+  let divisor=2
+  while(n>divisor){
+     if(n%divisor===0) {
+      return false
+     }
+     divisor++
+  }
+  return true
+}
 ```
