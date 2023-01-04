@@ -961,3 +961,28 @@ const isPrime=(n)=>{
   return true
 }
 ```
+# 对象序列化
+```js
+function stringify(val){
+  if(val&&typeof val==='object'){
+    // 数组
+    if(Array.isArray(val)){
+      return `[${val.map(stringify)}]`
+    }
+    // 日期
+    if(val instanceof Date){
+      return `new Date(${val})`
+    }
+    // 正则
+    if(val instanceof RegExp){
+      return ''+val
+    }
+    return `{${Object.keys(val).map(key=>JSON.stringify(key)+':'+stringify(val[key]))}}`
+    
+  }
+  if(typeof val==='string'){
+    return JSON.stringify(val)
+  }
+  return ''+val
+}
+```
