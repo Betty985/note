@@ -986,3 +986,14 @@ function stringify(val){
   return ''+val
 }
 ```
+# jsonp
+```js
+function jsonp(url,callback){
+  const callbackId=Math.random()
+  window[callbackId]=callback
+  url='callback'+callbackId
+  const script=document.createElement('script')
+  script.src=url
+  document.head.append(script)
+}
+```
