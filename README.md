@@ -997,3 +997,9 @@ function jsonp(url,callback){
   document.head.append(script)
 }
 ```
+# set实现并交差集
+```js
+const union=(a,b)=>new Set([...a],[...b])
+const intersect=(a,b)=>new Set([...a].filter(i=>b.has(i)))
+const diff=(a,b)=>new Set([...a].filter(i=>!b.has(i)))
+```
