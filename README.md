@@ -1003,3 +1003,16 @@ const union=(a,b)=>new Set([...a],[...b])
 const intersect=(a,b)=>new Set([...a].filter(i=>b.has(i)))
 const diff=(a,b)=>new Set([...a].filter(i=>!b.has(i)))
 ```
+# myProxy
+```js
+function MyProxy(obj,handler){
+  const _target=structuredClone(obj)
+  Object.keys(_target).forEach(key=>{
+    Object.defineProperty(_target,key,{
+      get:()=>handler.get&&handler.get(obj,key),
+      set:(newVal)=>handler.set&&handler.set(obj,key,newVal)
+    })
+  })
+  return _target
+}
+```
