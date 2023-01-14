@@ -1016,3 +1016,9 @@ function MyProxy(obj,handler){
   return _target
 }
 ```
+# trim
+```js
+const trim = str =>str.replace(/^\s*|\s$/g,'')
+
+const trim= str => str.replace(/^\s*(.*?)\s*$/g,'$1')
+```
