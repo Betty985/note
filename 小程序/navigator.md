@@ -1,0 +1,2 @@
+navigator的url属性是当前小程序内的跳转链接。
+需要在app.json的pages字段中存在&&不能在tabBar列表中
